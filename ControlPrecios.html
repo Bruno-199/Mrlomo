@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="./Styles.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <title>Control de Ventas</title>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="title text-white text-center">Menú</div>
+  <hr class="text-white">
+  <a href="./Tomadepedidos.html">
+    <i class="fas fa-list-alt"></i> Toma de pedidos
+    
+  </a>
+  <a href="./ControlPrecios.html">
+    <i class="fas fa-chart-line"></i> Control de ventas
+  </a>
+  <a href="./Productos.html">
+    <i class="fas fa-utensils"></i> Productos
+  </a>
+  <a href="#">
+    <i class="fas fa-users"></i> Usuarios
+  </a>
+  <hr class="text-white">
+  <a href="#">
+    <i class="fas fa-cogs"></i> Configuración
+  </a>
+  <a href="#">
+    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+  </a>
+</div>
+
+<br>
+<br>
+<!-- Content -->
+<div class="content">
+  <!-- Página de inicio -->
+  <div id="controlVentas" class="page">
+    <!-- Separación de dos espacios entre tablas -->
+    <div class="spacing"></div>
+    
+    <div class="title">HISTORIAL DE VENTAS DIARIAS</div>
+    <table class="table">
+      <tr>
+        <th>NOMBRE DEL PRODUCTO</th>
+        <th>UNIDADES VENDIDAS</th>
+        <th>TOTAL</th>
+      </tr>
+      <tr>
+        <td>MILA TRAD</td>
+        <td>3</td>
+        <td>$ 350.00</td>
+      </tr>
+      <tr>
+        <td>LOMO TRAD</td>
+        <td>6</td>
+        <td>$ 575.00</td>
+      </tr>
+      <tr>
+        <td>COCA-COLA</td>
+        <td>1</td>
+        <td>$ 24.00</td>
+      </tr>
+      
+    </table>
+    
+    <!-- Separación de dos espacios entre tablas -->
+    <div class="container">
+      <div class="title">Seleccione Fecha</div>
+      <div class="row mb-3">
+        <div class="col">
+          <label for="fechaInicial">Fecha Inicial</label>
+          <input type="date" id="fechaInicial" class="form-control" name="fechaInicial">
+        </div>
+        <div class="col">
+          <label for="fechaFinal">Fecha Final</label>
+          <input type="date" id="fechaFinal" class="form-control" name="fechaFinal">
+        </div>
+      </div>
+      <button class="btn btn-danger btn-custom">Borrar</button>
+      <br> 
+    <div class="spacing"></div>
+      <br> 
+
+      <!-- Separación de dos espacios entre tablas -->
+      <div class="spacing"></div>
+
+      <div class="title">VENTAS POR PRODUCTO DESDE 04/05/2024 HASTA 05/06/2024</div>
+      <table class="table">
+        <tr>
+          <th>NOMBRE DEL PRODUCTO</th>
+          <th>UNIDADES VENDIDAS</th>
+          <th>TOTAL DE VENTAS</th>
+        </tr>
+        <tr>
+          <td>MILA TRAD</td>
+          <td>22</td>
+          <td>$ 350.00</td>
+        </tr>
+        <tr>
+          <td>LOMO MR</td>
+          <td>34</td>
+          <td>$ 575.00</td>
+        </tr>
+        <tr>
+          <td>TASTY</td>
+          <td>12</td>
+          <td>$ 124.00</td>
+        </tr>
+        <tr>
+          <td>COCA-COLA</td>
+          <td>45</td>
+          <td>$ 678.00</td>
+        </tr>
+        <tr>
+          <td>SPRITE</td>
+          <td>6</td>
+          <td>$ 80.00</td>
+        </tr>
+        <tr>
+          <td>TOTAL</td>
+          <td>187</td>
+          <td>$ 1580.00</td>
+        </tr>
+      </table>
+
+    <!-- Separación de dos espacios entre tablas -->
+    <div class="spacing"></div>
+
+    
+    
+
+    <button class="button">Imprimir</button>
+    <button class="button">Cancelar</button>
+    <button class="button">Listo</button>
+    </div>
+  </div>
+  <br>
+  <br>
+  <!-- Informe Mensual -->
+  <div class="section">
+    <h2>Informe de Ventas por Mes</h2>
+    <form>
+        <label for="mes">Seleccionar Mes:</label>
+        <select id="mes" name="mes">
+            <option value="enero">Enero</option>
+            <option value="febrero">Febrero</option>
+            <!-- Otros meses -->
+        </select>
+        <br>
+        <button type="submit">Generar Informe</button>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

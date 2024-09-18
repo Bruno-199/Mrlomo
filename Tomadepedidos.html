@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toma de Pedidos</title>
+    <link href="./Styles.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Estilo para el navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: orange;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 1rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: rgb(0, 0, 0);
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar a:hover {
+            background-color: orange;
+            border-radius: 5px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .radio-group input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        section {
+            padding: 6rem 1rem;
+            height: 100vh;
+        }
+
+        .cart-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: orange;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            z-index: 1000;
+        }
+
+        .cart-icon:hover {
+            background-color: orange;
+            transform: scale(1.1);
+        }
+
+        .cart-icon svg {
+            fill: white;
+            width: 35px;
+            height: 35px;
+        }
+        
+        section {
+            height: 100vh;
+            padding: 1rem;
+            background-color: #f0f0f0;
+        }
+
+        /* Ajuste para el contenido */
+        .content {
+            padding: 20px;
+            margin-top: 50px; /* Altura del navbar */
+        }
+
+        table {
+            width: 80%;
+            margin: auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .price {
+            color: orange;
+            font-weight: bold;
+        }
+        .quantity, .addon {
+            width: 60px;
+        }
+        .order-btn {
+            background-color: orange;
+            color: white;
+            padding: 20px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        .order-btn:hover {
+            background-color: darkorange;
+        }
+        #total-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: orange;
+            margin-top: 20px;
+            text-align: center;
+        }
+        #aderezos, #gratinar, #mr-lomo-options, #agregados {
+            margin: 20px 0;
+            text-align: center;
+        }
+        #opciones {
+            margin: 20px 10px;
+            text-align: center;
+        }
+        .description-input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        /*parte del carrito*/
+        #carritoModal {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            height: 450px;
+            border-radius: 20px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            background-color: white;
+            z-index: 1050;
+            display: none;
+        }
+
+        #carritoHeader {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        #closeCarrito {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        #carritoBody {
+            padding: 10px;
+            height: 250px;
+            overflow-y: auto;
+        }
+
+        #carritoFooter {
+            text-align: center;
+            padding: 10px;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+
+        #toggleCarrito {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: orange;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            line-height: 60px;
+            cursor: pointer;
+        }
+
+        .payment-methods {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <div class="title text-white text-center">Menú</div>
+    <hr class="text-white">
+    <a href="./Tomadepedidos.html">
+        <i class="fas fa-list-alt"></i> Toma de pedidos
+    </a>
+    <a href="./ControlPrecios.html">
+        <i class="fas fa-chart-line"></i> Control de ventas
+    </a>
+    <a href="./Productos.html">
+        <i class="fas fa-utensils"></i> Productos
+    </a>
+    <a href="#">
+        <i class="fas fa-users"></i> Usuarios
+    </a>
+    <hr class="text-white">
+    <a href="#">
+        <i class="fas fa-cogs"></i> Configuración
+    </a>
+    <a href="#">
+        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+    </a>
+</div>
+
+<!-- Botón para mostrar/ocultar el sidebar -->
+<button id="toggleSidebar" class="btn btn-primary">☰</button>
+
+<script>
+    const sidebar = document.getElementById('sidebar');
+    const toggleSidebar = document.getElementById('toggleSidebar');
+    const content = document.querySelector('body');
+
+    toggleSidebar.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+        content.classList.toggle('shifted');
+    });
+</script>
+
+<style>
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 250px;
+        height: 100%;
+        background-color: #343a40;
+        color: white;
+        padding: 15px;
+        transition: transform 0.3s ease;
+        transform: translateX(-100%);
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    #toggleSidebar {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1001;
+    }
+
+    .shifted {
+        margin-left: 250px;
+        transition: margin-left 0.3s ease;
+    }
+</style>
+
+    <header>
+        <div class="navbar">
+            <a href="#mila">Milanesa</a>
+            <a href="#lomo">Lomito</a>
+            <a href="#burger">Burger</a>
+            <a href="#vegg">Veggie</a>
+            <a href="#papas">Papas</a>
+            <a href="#bebidas">Bebida</a>
+            <a href="#promo">Promociones</a>
+            <a href="#cargar">Cargar Pedido</a>
+            
+            <!-- Radio buttons para las mesas -->
+            <div class="radio-group">
+                <label>
+                    <input type="radio" name="mesa" value="mesa1"> Mesa 1
+                </label>
+                <label>
+                    <input type="radio" name="mesa" value="mesa2"> Mesa 2
+                </label>
+                <label>
+                    <input type="radio" name="mesa" value="mesa3"> Mesa 3
+                </label>
+                <label>
+                    <input type="radio" name="mesa" value="mesa4"> Mesa 4
+                </label>
+            </div>
+        </div>
+    </header>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div id="toggleCarrito">
+        🛒
+    </div>
+    
+    <!-- Modal fijo en la parte inferior derecha -->
+<div id="carritoModal">
+    <div id="carritoHeader">
+      Carrito de Compras
+      <button id="closeCarrito">&times;</button>
+    </div>
+    <div id="carritoBody">
+      <!-- Tabla con los detalles de la venta -->
+      <table class="table table-sm" id="carritoTabla">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Aquí se actualizarán los productos dinámicamente -->
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- Métodos de pago -->
+    <div class="payment-methods px-3">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="efectivo" id="pagoEfectivo">
+        <label class="form-check-label" for="pagoEfectivo">Efectivo</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="transferencia" id="pagoTransferencia">
+        <label class="form-check-label" for="pagoTransferencia">Transferencia</label>
+      </div>
+    </div>
+  
+    <div id="carritoFooter">
+      <button class="btn btn-success btn-sm" onclick="Borrar()">Borrar</button>
+      <button class="btn btn-secondary btn-sm" onclick="Editar()">Editar Pedido</button>
+      <button class="btn btn-warning btn-sm" onclick="imprimirTicket()">Imprimir Ticket</button>
+      <button class="btn btn-warning btn-sm" onclick="mandarComanda()">Mandar Comanda</button>
+      <button class="btn btn-success btn-sm" onclick="finalizarVenta()">Finalizar Venta</button>
+    </div>
+  </div>
+  
+  <!-- Scripts de Bootstrap y JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const carritoModal = document.getElementById('carritoModal');
+    const toggleCarrito = document.getElementById('toggleCarrito');
+    const closeCarrito = document.getElementById('closeCarrito');
+    const carritoTablaBody = document.querySelector('#carritoTabla tbody');
+  
+    // Mostrar/ocultar el carrito al hacer clic en el botón flotante
+    toggleCarrito.addEventListener('click', () => {
+      if (carritoModal.style.display === 'none' || carritoModal.style.display === '') {
+        carritoModal.style.display = 'block';
+      } else {
+        carritoModal.style.display = 'none';
+      }
+    });
+  
+    // Cerrar el carrito cuando se haga clic en el botón de cerrar
+    closeCarrito.addEventListener('click', () => {
+      carritoModal.style.display = 'none';
+    });
+  
+    // Función para agregar un producto al carrito dinámicamente
+    function agregarProducto(producto, cantidad, precio) {
+      const total = cantidad * precio;
+  
+      // Crear una nueva fila para el producto
+      const nuevaFila = document.createElement('tr');
+      nuevaFila.innerHTML = `
+        <td>${producto}</td>
+        <td>${cantidad}</td>
+        <td>$${total.toFixed(2)}</td>
+      `;
+  
+      // Añadir la fila a la tabla
+      carritoTablaBody.appendChild(nuevaFila);
+    }
+  
+    // Ejemplo de cómo agregar productos dinámicamente
+    agregarProducto('Producto 1', 2, 10);
+    agregarProducto('Producto 2', 1, 15);
+  
+    // Función para imprimir el ticket
+    function imprimirTicket() {
+      const pagoEfectivo = document.getElementById('pagoEfectivo').checked;
+      const pagoTransferencia = document.getElementById('pagoTransferencia').checked;
+  
+      if (pagoEfectivo || pagoTransferencia) {
+        let metodoPago = pagoEfectivo ? "Efectivo" : "Transferencia";
+        alert("Imprimiendo ticket... Método de pago: " + metodoPago);
+      } else {
+        alert("Por favor selecciona un método de pago.");
+      }
+    }
+  
+    // Función para mandar la comanda
+    function mandarComanda() {
+      alert("Mandando comanda...");
+      // Lógica para mandar la comanda.
+    }
+  
+    // Función para finalizar la venta
+    function finalizarVenta() {
+      const pagoEfectivo = document.getElementById('pagoEfectivo').checked;
+      const pagoTransferencia = document.getElementById('pagoTransferencia').checked;
+  
+      if (pagoEfectivo || pagoTransferencia) {
+        let metodoPago = pagoEfectivo ? "Efectivo" : "Transferencia";
+        alert("Venta finalizada. Método de pago: " + metodoPago);
+      } else {
+        alert("Por favor selecciona un método de pago.");
+      }
+    }
+  </script>
+      
+
+
+            
+<div id="mila">
+
+    <h2 style="text-align: center;">MILANESAS</h2>
+    
+    <form>
+        <table>
+            <thead>
+                <tr>
+                    <th>Mila</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Aderezos</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Tradicional</td>
+                    <td class="price" data-price="4700">$4700</td>
+                    <td>
+                        <select class="quantity" name="tradicional">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="checkbox" name="aderezo_tradicional" value="mayomr"> Mayo MR Lomo<br>
+                        <input type="checkbox" name="aderezo_tradicional" value="mayoc"> Mayo Común<br>
+                        <input type="checkbox" name="aderezo_tradicional" value="mostaza"> Mostaza<br>
+                        <input type="checkbox" name="aderezo_tradicional" value="ketchup"> Ketchup<br>
+                        <input type="checkbox" name="papas_tradicional" value="1000"> Agregar papas por $1000
+                    </td>
+                    <td>
+                        <textarea class="description-input" name="descripcion_tradicional" placeholder="Escribe aquí..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Especial</td>
+                    <td class="price" data-price="5700">$5700</td>
+                    <td>
+                        <select class="quantity" name="especial">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="checkbox" name="aderezo_especial" value="mayomr"> Mayo MR Lomo<br>
+                        <input type="checkbox" name="aderezo_especial" value="mayoc"> Mayo Común<br>
+                        <input type="checkbox" name="aderezo_especial" value="mostaza"> Mostaza<br>
+                        <input type="checkbox" name="aderezo_especial" value="ketchup"> Ketchup<br>
+                        <input type="checkbox" name="papas_especial" value="1000"> Agregar papas por $1000
+                    </td>
+                    <td>
+                        <textarea class="description-input" name="descripcion_especial" placeholder="Escribe aquí..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Mr Lomo</td>
+                    <td class="price" data-price="6700">$6700</td>
+                    <td>
+                        <select class="quantity" name="mr_lomo">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="checkbox" name="aderezo_mr_lomo" value="mayomr"> Mayo MR Lomo<br>
+                        <input type="checkbox" name="aderezo_mr_lomo" value="mayoc"> Mayo Común<br>
+                        <input type="checkbox" name="aderezo_mr_lomo" value="mostaza"> Mostaza<br>
+                        <input type="checkbox" name="aderezo_mr_lomo" value="ketchup"> Ketchup<br>
+                        <input type="checkbox" name="papas_mr_lomo" value="1000"> Agregar papas por $1000
+                    </td>
+                    <td>
+                        <textarea class="description-input" name="descripcion_mr_lomo" placeholder="Escribe aquí..."></textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>Agregado</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Gratinado</td>
+                    <td class="price" data-price="650">$1300</td>
+                    <td>
+                        <select name="gratinado" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>>
+                <tr>
+                    <td>Dip de Mayo</td>
+                    <td class="price" data-price="250">$500</td>
+                    <td>
+                        <select name="dip_mayo" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Papas Extra</td>
+                    <td class="price" data-price="700">$1400</td>
+                    <td>
+                        <select name="papas_extra" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>1 Agregado (J)</td>
+                    <td class="price" data-price="350">$700</td>
+                    <td>
+                        <select name="agregado_jqh" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <tr>
+                        <td>1 Agregado (Q)</td>
+                        <td class="price" data-price="350">$700</td>
+                        <td>
+                            <select name="agregado_jqh" class="quantity">
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tr>
+                    <td>1 Agregado (H)</td>
+                    <td class="price" data-price="350">$700</td>
+                    <td>
+                        <select name="agregado_jqh" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    
+        <!-- Opción de gratinado para Mr Lomo -->
+        <div id="mr-lomo-options">
+            <label for="mr-lomo-gratinado">Gratinado para Mr Lomo:</label>
+            <select id="mr-lomo-gratinado" name="mr-lomo-gratinado">
+                <option value="">Sin gratinar</option>
+                <option value="cheddar">Cheddar y Panceta</option>
+                <option value="cheddar">Cheddar y Verdeo</option>
+                <option value="tybo">Tybo y Criollita</option>
+                <option value="roquefort">Roquefort</option>
+            </select>
+    
+            <label for="mr-lomo-gratinado-posicion">Posición del gratinado:</label>
+            <select id="mr-lomo-gratinado-posicion" name="mr-lomo-gratinado-posicion">
+                <option value="dentro">Dentro de mila</option>
+                <option value="fuera">Fuera de mila</option>
+            </select>
+        </div>
+    
+    </form>
+    
+    <script>
+        // Obtener todos los selects de cantidad, los checkbox de papas y los selects de agregados
+        const selects = document.querySelectorAll('.quantity');
+        const papasCheckboxes = document.querySelectorAll('input[name^="papas_"]');
+        const agregadoSelects = document.querySelectorAll('select[name^="gratinado"], select[name^="medallon_extra"], select[name^="dip_mayo"], select[name^="papas_extra"], select[name^="agregado_jqh"]');
+    
+        // Actualizar el precio total
+        function updateTotal() {
+            let total = 0;
+    
+            // Recorrer cada select para calcular el total de millas
+            document.querySelectorAll('tbody tr').forEach(row => {
+                const quantitySelect = row.querySelector('.quantity');
+                if (quantitySelect) {
+                    const quantity = parseInt(quantitySelect.value);
+                    const price = parseInt(row.querySelector('.price').getAttribute('data-price'));
+                    total += quantity * price;
+                }
+            });
+    
+            // Agregar el costo de las papas si está seleccionado
+            papasCheckboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    total += parseInt(checkbox.value);
+                }
+            });
+    
+            // Agregar el costo de los agregados
+            agregadoSelects.forEach(select => {
+                const quantity = parseInt(select.value);
+                const price = parseInt(select.closest('tr').querySelector('.price').getAttribute('data-price'));
+                total += quantity * price;
+            });
+    
+            // Mostrar el total en la página
+            document.getElementById('total-price').textContent = `Total: $${total}`;
+        }
+    
+        // Agregar el evento 'change' a cada select, checkbox de papas y checkbox de agregados
+        selects.forEach(select => {
+            select.addEventListener('change', updateTotal);
+        });
+        papasCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateTotal);
+        });
+        agregadoSelects.forEach(select => {
+            select.addEventListener('change', updateTotal);
+        });
+    
+        // Calcular el total inicial al cargar la página
+        updateTotal();
+    </script>
+</div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<div id="lomo">
+
+    <h2 style="text-align: center;">LOMITOS</h2>
+    
+    <form >
+        <table>
+            <thead>
+                <tr>
+                    <th>Lomito</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Aderezos</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Tradicional</td>
+                    <td class="price" data-price="5000">$5000</td>
+                    <td>
+                        <select class="quantity" name="tradicional">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="checkbox" name="aderezo_tradicional" value="mayomr"> Mayo MR Lomo<br>
+                        <input type="checkbox" name="aderezo_tradicional" value="mayoc"> Mayo Común<br>
+                        <input type="checkbox" name="aderezo_tradicional" value="mostaza"> Mostaza<br>
+                        <input type="checkbox" name="aderezo_tradicional" value="ketchup"> Ketchup<br>
+                        <input type="checkbox" name="papas_tradicional" value="1000"> Agregar papas por $1000
+                    </td>
+                    <td>
+                        <textarea class="description-input" name="descripcion_tradicional" placeholder="Escribe aquí..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Especial</td>
+                    <td class="price" data-price="6000">$6000</td>
+                    <td>
+                        <select class="quantity" name="especial">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="checkbox" name="aderezo_especial" value="mayomr"> Mayo MR Lomo<br>
+                        <input type="checkbox" name="aderezo_especial" value="mayoc"> Mayo Común<br>
+                        <input type="checkbox" name="aderezo_especial" value="mostaza"> Mostaza<br>
+                        <input type="checkbox" name="aderezo_especial" value="ketchup"> Ketchup<br>
+                        <input type="checkbox" name="papas_especial" value="1000"> Agregar papas por $1000
+                    </td>
+                    <td>
+                        <textarea class="description-input" name="descripcion_especial" placeholder="Escribe aquí..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Mr Lomo</td>
+                    <td class="price" data-price="7000">$7000</td>
+                    <td>
+                        <select class="quantity" name="mr_lomo">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="checkbox" name="aderezo_mr_lomo" value="mayomr"> Mayo MR Lomo<br>
+                        <input type="checkbox" name="aderezo_mr_lomo" value="mayoc"> Mayo Común<br>
+                        <input type="checkbox" name="aderezo_mr_lomo" value="mostaza"> Mostaza<br>
+                        <input type="checkbox" name="aderezo_mr_lomo" value="ketchup"> Ketchup<br>
+                        <input type="checkbox" name="papas_mr_lomo" value="1000"> Agregar papas por $1000
+                    </td>
+                    <td>
+                        <textarea class="description-input" name="descripcion_mr_lomo" placeholder="Escribe aquí..."></textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <table>
+            <thead>
+                <tr>
+                    <th>Agregado</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Gratinado</td>
+                    <td class="price" data-price="700">$1400</td>
+                    <td>
+                        <select name="gratinado" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Dip de Mayo</td>
+                    <td class="price" data-price="250">$500</td>
+                    <td>
+                        <select name="dip_mayo" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Papas Extra</td>
+                    <td class="price" data-price="700">$1400</td>
+                    <td>
+                        <select name="papas_extra" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>1 Agregado (J)</td>
+                    <td class="price" data-price="350">$700</td>
+                    <td>
+                        <select name="agregado_jqh" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr></tr>
+                    <td>1 Agregado (Q)</td>
+                    <td class="price" data-price="350">$700</td>
+                    <td>
+                        <select name="agregado_jqh" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr></tr>
+                    <td>1 Agregado (H)</td>
+                    <td class="price" data-price="350">$700</td>
+                    <td>
+                        <select name="agregado_jqh" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    
+        <!-- Opción de gratinado para Mr Lomo -->
+        <div id="mr-lomo-options">
+            <label for="mr-lomo-gratinado">Gratinado para Mr Lomo:</label>
+            <select id="mr-lomo-gratinado" name="mr-lomo-gratinado">
+                <option value="">Sin gratinar</option>
+                <option value="cheddar">Cheddar y Panceta</option>
+                <option value="cheddar">Cheddar y Verdeo</option>
+                <option value="tybo">Tybo y Criollita</option>
+                <option value="roquefort">Roquefort</option>
+            </select>
+    
+            <label for="mr-lomo-gratinado-posicion">Posición del gratinado:</label>
+            <select id="mr-lomo-gratinado-posicion" name="mr-lomo-gratinado-posicion">
+                <option value="dentro">Dentro del lomo</option>
+                <option value="fuera">Fuera del lomo</option>
+            </select>
+        </div>
+    
+    </form>
+    
+    <script>
+        // Obtener todos los selects de cantidad, los checkbox de papas y los selects de agregados
+        const selects = document.querySelectorAll('.quantity');
+        const papasCheckboxes = document.querySelectorAll('input[name^="papas_"]');
+        const agregadoSelects = document.querySelectorAll('select[name^="gratinado"], select[name^="medallon_extra"], select[name^="dip_mayo"], select[name^="papas_extra"], select[name^="agregado_jqh"]');
+    
+        // Actualizar el precio total
+        function updateTotal() {
+            let total = 0;
+    
+            // Recorrer cada select para calcular el total de lomitos
+            document.querySelectorAll('tbody tr').forEach(row => {
+                const quantitySelect = row.querySelector('.quantity');
+                if (quantitySelect) {
+                    const quantity = parseInt(quantitySelect.value);
+                    const price = parseInt(row.querySelector('.price').getAttribute('data-price'));
+                    total += quantity * price;
+                }
+            });
+    
+            // Agregar el costo de las papas si está seleccionado
+            papasCheckboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    total += parseInt(checkbox.value);
+                }
+            });
+    
+            // Agregar el costo de los agregados
+            agregadoSelects.forEach(select => {
+                const quantity = parseInt(select.value);
+                const price = parseInt(select.closest('tr').querySelector('.price').getAttribute('data-price'));
+                total += quantity * price;
+            });
+    
+            // Mostrar el total en la página
+            document.getElementById('total-price').textContent = `Total: $${total}`;
+        }
+    
+        // Agregar el evento 'change' a cada select, checkbox de papas y checkbox de agregados
+        selects.forEach(select => {
+            select.addEventListener('change', updateTotal);
+        });
+        papasCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateTotal);
+        });
+        agregadoSelects.forEach(select => {
+            select.addEventListener('change', updateTotal);
+        });
+    
+        // Calcular el total inicial al cargar la página
+        updateTotal();
+    </script>
+</div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<div id="burger">
+
+    <h2 style="text-align: center;">HAMBURGUESAS</h2>
+    
+    <form id="order-form">
+        <table>
+            <thead>
+                <tr>
+                    <th>Hamburguesa</th>
+                    <th>Precio Simple</th>
+                    <th>Precio Doble</th>
+                    <th>Cantidad</th>
+                    <th>Tipo</th>
+                    <th>Extras y Aderezos</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Especial</td>
+                    <td class="price" data-price-simple="4200">$4200</td>
+                    <td class="price" data-price-doble="5400">$5400</td>
+                    <td>
+                        <select class="quantity" name="especial">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="type" name="tipo_especial">
+                            <option value="simple">Simple</option>
+                            <option value="doble">Doble</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="checkbox" name="aderezo_especial" value="mayo"> Mayo<br>
+                        <input type="checkbox" name="aderezo_especial" value="mostaza"> Mostaza<br>
+                        <input type="checkbox" name="aderezo_especial" value="ketchup"> Ketchup<br>
+                        <input type="checkbox" name="papas_especial" value="1000"> Agregar papas por $1000
+                    </td>
+                    <td>
+                        <textarea class="description-input" name="descripcion_especial" placeholder="Escribe aquí..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Mr Lomo</td>
+                    <td class="price" data-price-simple="4800">$4800</td>
+                    <td class="price" data-price-doble="6000">$6000</td>
+                    <td>
+                        <select class="quantity" name="mr_lomo">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="type" name="tipo_mr_lomo">
+                            <option value="simple">Simple</option>
+                            <option value="doble">Doble</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="checkbox" name="aderezo_mr_lomo" value="mayo"> Mayo<br>
+                        <input type="checkbox" name="aderezo_mr_lomo" value="mostaza"> Mostaza<br>
+                        <input type="checkbox" name="aderezo_mr_lomo" value="ketchup"> Ketchup<br>
+                        <input type="checkbox" name="papas_mr_lomo" value="1000"> Agregar papas por $1000<br>
+                        <div class="gratinado-option">
+                            <label for="gratinado_mr_lomo">Gratinado (gratis):</label>
+                            <select name="gratinado_mr_lomo">
+                                <option value="">Sin gratinar</option>
+                                <option value="cheddar">Cheddar y Panceta</option>
+                                <option value="cheddar">Cheddar y Verdeo</option>
+                                <option value="tybo">Tybo y Criollita</option>
+                                <option value="roquefort">Roquefort</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <textarea class="description-input" name="descripcion_mr_lomo" placeholder="Escribe aquí..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Tasty</td>
+                    <td class="price" data-price-simple="4300">$4300</td>
+                    <td class="price" data-price-doble="5500">$5500</td>
+                    <td>
+                        <select class="quantity" name="tasty">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="type" name="tipo_tasty">
+                            <option value="simple">Simple</option>
+                            <option value="doble">Doble</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="checkbox" name="aderezo_tasty" value="mayo"> Mayo<br>
+                        <input type="checkbox" name="aderezo_tasty" value="mostaza"> Mostaza<br>
+                        <input type="checkbox" name="aderezo_tasty" value="ketchup"> Ketchup<br>
+                        <input type="checkbox" name="papas_tasty" value="1000"> Agregar papas por $1000
+                    </td>
+                    <td>
+                        <textarea class="description-input" name="descripcion_tasty" placeholder="Escribe aquí..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Tasty Mr Lomo</td>
+                    <td class="price" data-price-simple="4900">$4900</td>
+                    <td class="price" data-price-doble="6100">$6100</td>
+                    <td>
+                        <select class="quantity" name="tasty_mr_lomo">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="type" name="tipo_tasty_mr_lomo">
+                            <option value="simple">Simple</option>
+                            <option value="doble">Doble</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="checkbox" name="aderezo_tasty_mr_lomo" value="mayo"> Mayo<br>
+                        <input type="checkbox" name="aderezo_tasty_mr_lomo" value="mostaza"> Mostaza<br>
+                        <input type="checkbox" name="aderezo_tasty_mr_lomo" value="ketchup"> Ketchup<br>
+                        <input type="checkbox" name="papas_tasty_mr_lomo" value="1000"> Agregar papas por $1000<br>
+                        <div class="gratinado-option">
+                            <label for="gratinado_tasty_mr_lomo">Gratinado (gratis):</label>
+                            <select name="gratinado_tasty_mr_lomo">
+                                <option value="">Sin gratinar</option>
+                                <option value="cheddar">Cheddar y Panceta</option>
+                                <option value="cheddar">Cheddar y Verdeo</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <textarea class="description-input" name="descripcion_tasty_mr_lomo" placeholder="Escribe aquí..."></textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <table>
+            <thead>
+                <tr>
+                    <th>Agregado</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Gratinado</td>
+                    <td class="price">$1300</td>
+                    <td>
+                        <select name="gratinado" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Medallón Extra</td>
+                    <td class="price">$1400</td>
+                    <td>
+                        <select name="medallon_extra" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Dip de Mayo</td>
+                    <td class="price">$500</td>
+                    <td>
+                        <select name="dip_mayo" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Papas Extra</td>
+                    <td class="price">$1400</td>
+                    <td>
+                        <select name="papas_extra" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>1 Agregado (J)</td>
+                    <td class="price">$700</td>
+                    <td>
+                        <select name="agregado_jqh" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>1 Agregado (Q)</td>
+                    <td class="price">$700</td>
+                    <td>
+                        <select name="agregado_jqh" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>1 Agregado (H)</td>
+                    <td class="price">$700</td>
+                    <td>
+                        <select name="agregado_jqh" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    
+    </form>
+    
+    <script>
+        const quantitySelects = document.querySelectorAll('.quantity');
+        const typeSelects = document.querySelectorAll('.type');
+        const papasCheckboxes = document.querySelectorAll('input[type="checkbox"][name^="papas_"]');
+    
+        function updateTotal() {
+            let total = 0;
+    
+            // Sumar las hamburguesas
+            document.querySelectorAll('tbody tr').forEach(row => {
+                const quantity = parseInt(row.querySelector('.quantity').value);
+                const typeSelect = row.querySelector('.type');
+                const priceSimple = parseInt(row.querySelector('td[data-price-simple]')?.getAttribute('data-price-simple') || 0);
+                const priceDoble = parseInt(row.querySelector('td[data-price-doble]')?.getAttribute('data-price-doble') || 0);
+                
+                if (typeSelect) {
+                    const type = typeSelect.value;
+                    total += (type === 'simple' ? priceSimple : priceDoble) * quantity;
+                }
+    
+                const papasCheckbox = row.querySelector('input[type="checkbox"][name^="papas_"]');
+                if (papasCheckbox && papasCheckbox.checked) {
+                    total += quantity * parseInt(papasCheckbox.value);
+                }
+            });
+    
+            // Sumar los agregados
+            const agregados = document.querySelectorAll('table:last-of-type tbody tr');
+            agregados.forEach(row => {
+                const cantidad = parseInt(row.querySelector('.quantity').value);
+                const precio = parseInt(row.querySelector('.price').textContent.replace('$', ''));
+                total += cantidad * precio;
+            });
+    
+            document.getElementById('total-price').textContent = `Total: $${total}`;
+        }
+    
+        function toggleGratinadoOptions() {
+            const mrLomoQuantity = document.querySelector('select[name="mr_lomo"]').value;
+            const tastyMrLomoQuantity = document.querySelector('select[name="tasty_mr_lomo"]').value;
+    
+            document.querySelectorAll('.gratinado-option').forEach(option => {
+                option.style.display = (mrLomoQuantity > 0 || tastyMrLomoQuantity > 0) ? 'block' : 'none';
+            });
+        }
+    
+        quantitySelects.forEach(select => {
+            select.addEventListener('change', () => {
+                updateTotal();
+                toggleGratinadoOptions();
+            });
+        });
+    
+        typeSelects.forEach(select => {
+            select.addEventListener('change', updateTotal);
+        });
+    
+        papasCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateTotal);
+        });
+    
+        updateTotal();
+        toggleGratinadoOptions();
+    </script>
+</div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<div id="vegg">
+
+    <h2 style="text-align: center;">VEGGIES</h2>
+    
+    <form id="order-form">
+        <table>
+            <thead>
+                <tr>
+                    <th>Veggie</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Aderezos</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Especial</td>
+                    <td class="price" data-price="4200">$4200</td>
+                    <td>
+                        <select class="quantity" name="especial_veggie">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="checkbox" name="aderezo_especial_veggie" value="mayomr"> Mayo MR Lomo<br>
+                        <input type="checkbox" name="aderezo_especial_veggie" value="mayoc"> Mayo Común<br>
+                        <input type="checkbox" name="aderezo_especial_veggie" value="mostaza"> Mostaza<br>
+                        <input type="checkbox" name="aderezo_especial_veggie" value="ketchup"> Ketchup<br>
+                        <input type="checkbox" name="papas_especial_veggie" value="1000"> Agregar papas por $1000
+                    </td>
+                    <td>
+                        <textarea class="description-input" name="descripcion_especial_veggie" placeholder="Escribe aquí..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Mr Lomo</td>
+                    <td class="price" data-price="5000">$5000</td>
+                    <td>
+                        <select class="quantity" name="mr_lomo_veggie">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="checkbox" name="aderezo_mr_lomo_veggie" value="mayomr"> Mayo MR Lomo<br>
+                        <input type="checkbox" name="aderezo_mr_lomo_veggie" value="mayoc"> Mayo Común<br>
+                        <input type="checkbox" name="aderezo_mr_lomo_veggie" value="mostaza"> Mostaza<br>
+                        <input type="checkbox" name="aderezo_mr_lomo_veggie" value="ketchup"> Ketchup<br>
+                        <input type="checkbox" name="papas_mr_lomo_veggie" value="1000"> Agregar papas por $1000
+                    </td>
+                    <td>
+                        <textarea class="description-input" name="descripcion_mr_lomo_veggie" placeholder="Escribe aquí..."></textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <table>
+            <thead>
+                <tr>
+                    <th>Agregado</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Gratinado</td>
+                    <td class="price" data-price="650">$1300</td>
+                    <td>
+                        <select name="gratinado" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Dip de Mayo</td>
+                    <td class="price" data-price="250">$500</td>
+                    <td>
+                        <select name="dip_mayo" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Papas Extra</td>
+                    <td class="price" data-price="700">$1400</td>
+                    <td>
+                        <select name="papas_extra" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>1 Agregado (H)</td>
+                    <td class="price" data-price="350">$700</td>
+                    <td>
+                        <select name="agregado_jqh" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    
+        <!-- Opción de gratinado para Mr Lomo -->
+        <div id="mr-lomo-options">
+            <label for="mr-lomo-gratinado">Gratinado para Mr Lomo:</label>
+            <select id="mr-lomo-gratinado" name="mr-lomo-gratinado">
+                <option value="">Sin gratinar</option>
+                <option value="cheddar-verdeo">Cheddar y Verdeo</option>
+                <option value="tybo-criollita">Tybo y Criollita</option>
+                <option value="roquefort">Roquefort</option>
+            </select>
+    
+            <label for="mr-lomo-gratinado-posicion">Posición del gratinado:</label>
+            <select id="mr-lomo-gratinado-posicion" name="mr-lomo-gratinado-posicion">
+                <option value="dentro">Dentro del pan</option>
+                <option value="fuera">Fuera del pan</option>
+            </select>
+        </div>
+    
+    </form>
+    
+    <script>
+        // Obtener todos los selects de cantidad, los checkbox de papas y los selects de agregados
+        const selects = document.querySelectorAll('.quantity');
+        const papasCheckboxes = document.querySelectorAll('input[name^="papas_"]');
+        const agregadoSelects = document.querySelectorAll('select[name^="gratinado"], select[name^="medallon_extra"], select[name^="dip_mayo"], select[name^="papas_extra"], select[name^="agregado_jqh"]');
+    
+        // Actualizar el precio total
+        function updateTotal() {
+            let total = 0;
+    
+            // Recorrer cada select para calcular el total de Veggies
+            document.querySelectorAll('tbody tr').forEach(row => {
+                const quantitySelect = row.querySelector('.quantity');
+                if (quantitySelect) {
+                    const quantity = parseInt(quantitySelect.value);
+                    const price = parseInt(row.querySelector('.price').getAttribute('data-price'));
+                    total += quantity * price;
+                }
+            });
+    
+            // Agregar el costo de las papas si está seleccionado
+            papasCheckboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    total += parseInt(checkbox.value);
+                }
+            });
+    
+            // Agregar el costo de los agregados
+            agregadoSelects.forEach(select => {
+                const quantity = parseInt(select.value);
+                const price = parseInt(select.closest('tr').querySelector('.price').getAttribute('data-price'));
+                total += quantity * price;
+            });
+    
+            // Mostrar el total en la página
+            document.getElementById('total-price').textContent = `Total: $${total}`;
+        }
+    
+        // Agregar el evento 'change' a cada select, checkbox de papas y checkbox de agregados
+        selects.forEach(select => {
+            select.addEventListener('change', updateTotal);
+        });
+        papasCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateTotal);
+        });
+        agregadoSelects.forEach(select => {
+            select.addEventListener('change', updateTotal);
+        });
+    
+        // Calcular el total inicial al cargar la página
+        updateTotal();
+    </script>
+</div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<div id="papas">
+
+    <h2 style="text-align: center;">PAPAS</h2>
+    
+    <form id="order-form">
+        <table>
+            <thead>
+                <tr>
+                    <th>Tipo de Papas</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Papas Comunes</td>
+                    <td class="price" data-price="5300">$5300</td>
+                    <td>
+                        <select class="quantity" name="papas_comunes">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </td>
+                    <td>
+                        Porción de papas fritas + Dip de mayonesa MR Lomo.
+                        <textarea class="description-input" name="descripcion_papas_comunes" placeholder="Escribe aquí..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Papas Mr Lomo</td>
+                    <td class="price" data-price="6200">$6200</td>
+                    <td>
+                        <select class="quantity" name="papas_mr_lomo">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </td>
+                    <td>
+                        Porción de papas fritas gratinadas con queso cheddar, bacon y cebolla verde + Dip de mayonesa MR Lomo.
+                        <textarea class="description-input" name="descripcion_papas_mr_lomo" placeholder="Escribe aquí..."></textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <table>
+            <thead>
+                <tr>
+                    <th>Agregado</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Dip de Mayo</td>
+                    <td class="price" data-price="500">$500</td>
+                    <td>
+                        <select name="dip_mayo" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Papas Extra</td>
+                    <td class="price" data-price="1400">$1400</td>
+                    <td>
+                        <select name="papas_extra" class="quantity">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    
+    </form>
+    
+    <script>
+        // Obtener todos los selects de cantidad
+        const selects = document.querySelectorAll('.quantity');
+        const agregadoSelects = document.querySelectorAll('select[name^="gratinado"], select[name^="medallon_extra"], select[name^="dip_mayo"], select[name^="papas_extra"], select[name^="agregado_jqh"]');
+    
+        // Actualizar el precio total
+        function updateTotal() {
+            let total = 0;
+    
+            // Recorrer cada select para calcular el total de Papas
+            document.querySelectorAll('tbody tr').forEach(row => {
+                const quantitySelect = row.querySelector('.quantity');
+                if (quantitySelect) {
+                    const quantity = parseInt(quantitySelect.value);
+                    const price = parseInt(row.querySelector('.price').getAttribute('data-price'));
+                    total += quantity * price;
+                }
+            });
+    
+            // Agregar el costo de los agregados
+            agregadoSelects.forEach(select => {
+                const quantity = parseInt(select.value);
+                const price = parseInt(select.closest('tr').querySelector('.price').getAttribute('data-price'));
+                total += quantity * price;
+            });
+    
+            // Mostrar el total en la página
+            document.getElementById('total-price').textContent = `Total: $${total}`;
+        }
+    
+        // Agregar el evento 'change' a cada select
+        selects.forEach(select => {
+            select.addEventListener('change', updateTotal);
+        });
+        agregadoSelects.forEach(select => {
+            select.addEventListener('change', updateTotal);
+        });
+    
+        // Calcular el total inicial al cargar la página
+        updateTotal();
+    </script>
+</div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<div id="bebidas">
+
+    <h2 style="text-align: center;">BEBIDAS</h2>
+    
+    <form id="order-form">
+        <table>
+            <thead>
+                <tr>
+                    <th>Bebida</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Agua de Mesa 500ml (Con o Sin Gas)</td>
+                    <td class="price" data-price="1300">$1300</td>
+                    <td>
+                        <select class="quantity" name="agua_500ml">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Aquarius 500ml (Varios Sabores)</td>
+                    <td class="price" data-price="1600">$1600</td>
+                    <td>
+                        <select class="quantity" name="aquarius_500ml">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Gaseosa 500ml (Coca/Coca Zero/Fanta/Sprite)</td>
+                    <td class="price" data-price="1800">$1800</td>
+                    <td>
+                        <select class="quantity" name="gaseosa_500ml">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Aquarius 1.5L (Varios Sabores)</td>
+                    <td class="price" data-price="2600">$2600</td>
+                    <td>
+                        <select class="quantity" name="aquarius_1_5l">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Gaseosa 1.5L (Coca/Coca Zero/Fanta/Sprite)</td>
+                    <td class="price" data-price="2900">$2900</td>
+                    <td>
+                        <select class="quantity" name="gaseosa_1_5l">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Cerveza Norte 473cc</td>
+                    <td class="price" data-price="1800">$1800</td>
+                    <td>
+                        <select class="quantity" name="cerveza_norte_473cc">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Cerveza Heineken 473cc</td>
+                    <td class="price" data-price="2200">$2200</td>
+                    <td>
+                        <select class="quantity" name="cerveza_heineken_473cc">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    
+    </form>
+    
+    <script>
+        // Obtener todos los select de cantidad
+        const selects = document.querySelectorAll('.quantity');
+    
+        // Actualizar el precio total
+        function updateTotal() {
+            let total = 0;
+    
+            // Recorrer cada select para calcular el total
+            selects.forEach(select => {
+                const quantity = parseInt(select.value);
+                const price = parseInt(select.closest('tr').querySelector('.price').getAttribute('data-price'));
+                total += quantity * price;
+            });
+    
+            // Mostrar el total en la página
+            document.getElementById('total-price').textContent = `Total: $${total}`;
+        }
+    
+        // Agregar el evento 'change' a cada select
+        selects.forEach(select => {
+            select.addEventListener('change', updateTotal);
+        });
+    
+        // Calcular el total inicial al cargar la página
+        updateTotal();
+    </script>
+</div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<div>
+
+    <h2 style="text-align: center;">PROMOCIONES</h2>
+    
+    <form id="promo">
+        <table>
+            <thead>
+                <tr>
+                    <th>Tipo de Papas</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Promo 1</td>
+                    <td class="price" data-price="14900">$14900</td>
+                    <td>
+                        <select class="quantity" name="promo1">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </td>
+                    <td>
+                        DOS MILAS ESPECILAES + PAPAS + GASEOSA + DIP DE MAYO
+                    </td>
+                </tr>
+                <tr>
+                    <td>Promo 2</td>
+                    <td class="price" data-price="15500">$15500</td>
+                    <td>
+                        <select class="quantity" name="promo2">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </td>
+                    <td>
+                        DOS LOMOS ESPECIALES + PAPAS + GASEOSA + DIP DE MAYO
+                    </td>
+                </tr>
+                <tr>
+                    <td>Promo 3</td>
+                    <td class="price" data-price="11900">$11900</td>
+                    <td>
+                        <select class="quantity" name="promo3">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </td>
+                    <td>
+                        DOS BURGER ESPECIALES + PAPAS + GASEOSA + DIP DE MAYO
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <br>
+        <br>
+        <br>
+        <!-- Opción de comer en el local o llevar -->
+        <div id="opciones">
+            <label for="comer">Opciones:</label>
+            <input type="radio" id="local" name="opcion" value="local" checked> Comer en el local
+            <input type="radio" id="llevar" name="opcion" value="llevar"> Para llevar<br>
+        </div>
+    
+        
+        <div id="cargar" style="text-align: center; margin-top: 20px;">
+            <button class="order-btn" type="submit">Cargar Pedido</button>
+        </div>
+    </form>
+    
+    <script>
+        // Obtener todos los select de cantidad
+        const selects = document.querySelectorAll('.quantity');
+    
+        // Actualizar el precio total
+        function updateTotal() {
+            let total = 0;
+    
+            // Recorrer cada select para calcular el total
+            selects.forEach(select => {
+                const quantity = parseInt(select.value);
+                const price = parseInt(select.closest('tr').querySelector('.price').getAttribute('data-price'));
+                total += quantity * price;
+            });
+    
+            // Mostrar el total en la página
+            document.getElementById('total-price').textContent = `Total: $${total}`;
+        }
+    
+        // Agregar el evento 'change' a cada select
+        selects.forEach(select => {
+            select.addEventListener('change', updateTotal);
+        });
+    
+        // Calcular el total inicial al cargar la página
+        updateTotal();
+    </script>
+</div>
+<br>
+<br>
+<br>
+<br>
+<br>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="./Styles.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <title>Productos</title>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="title text-white text-center">Menú</div>
+  <hr class="text-white">
+  <a href="./Tomadepedidos.html">
+    <i class="fas fa-list-alt"></i> Toma de pedidos
+    
+  </a>
+  <a href="./ControlPrecios.html">
+    <i class="fas fa-chart-line"></i> Control de ventas
+  </a>
+  <a href="./Productos.html">
+    <i class="fas fa-utensils"></i> Productos
+  </a>
+  <a href="#">
+    <i class="fas fa-users"></i> Usuarios
+  </a>
+  <hr class="text-white">
+  <a href="#">
+    <i class="fas fa-cogs"></i> Configuración
+  </a>
+  <a href="#">
+    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+  </a>
+</div>
+
+<!-- Content: Productos -->
+<div class="content">
+  <div class="container">
+    <div class="mb-3">
+        <br>
+        <br>
+        <h2>Agregue el nuevo Producto y su Precio</h2>
+        <br>
+        <input type="text" id="newProductName" class="form-control" placeholder="Nuevo Producto" required>
+        <input type="number" id="newProductPrice" class="form-control mt-2" placeholder="Precio" required>
+        <button class="btn btn-success btn-custom mt-2" onclick="addProduct()">Agregar Producto</button>
+      </div>
+    <div class="title">Productos Finales y Precios</div>
+    <table class="table table-bordered" id="productTable">
+      <thead class="table-dark">
+        <tr>
+          <th>Producto</th>
+          <th>Precio</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="productBody">
+        <tr>
+          <td>Producto 1</td>
+          <td>$10.00</td>
+          <td>
+            <button class="btn btn-warning btn-sm" onclick="editProduct(this)">Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteProduct(this)">Eliminar</button>
+          </td>
+        </tr>
+        <tr>
+          <td>Producto 2</td>
+          <td>$15.00</td>
+          <td>
+            <button class="btn btn-warning btn-sm" onclick="editProduct(this)">Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteProduct(this)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    
+  </div>
+</div>
+
+<script src="./app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
